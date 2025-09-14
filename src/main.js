@@ -51,23 +51,93 @@ class WeatherApp {
 		);
 	}
 
+	formatLocationName(location) {
+		// Split by comma to separate city and country/nation
+		const parts = location.split(',').map((part) => part.trim());
+
+		// Capitalize first letter of each part
+		const formattedParts = parts.map((part) => {
+			if (!part) return '';
+			return part.charAt(0).toUpperCase() + part.slice(1).toLowerCase();
+		});
+
+		// Join back in City, Nation format
+		return formattedParts.join(', ');
+	}
+
 	async handleSearch() {
 		const location = this.elements.locationInput.value.trim();
 		if (!location) return;
 
+		// Format the location name in City, Nation format
+		const formattedLocation = this.formatLocationName(location);
+		this.locationKey = formattedLocation;
+		console.log('Manual search location set to:', this.locationKey);
+		console.log(
+			'Original input:',
+			location,
+			'Formatted:',
+			formattedLocation
+		);
+
 		await this.fetchWeatherData(location);
 		this.elements.locationInput.value = '';
+	}
+
+	async reverseGeocode(lat, lon) {
+		try {
+			console.log('Reverse geocoding called with:', lat, lon);
+			const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+			console.log('Reverse geocoding URL:', url);
+			const response = await fetch(url);
+			console.log('Reverse geocoding response status:', response.status);
+			if (!response.ok) {
+				throw new Error('Reverse geocoding failed');
+			}
+			const data = await response.json();
+			console.log('Reverse geocoding data:', data);
+			// Return location name in City, Country format
+			const city =
+				data.address.city ||
+				data.address.town ||
+				data.address.village ||
+				data.address.county ||
+				'Unknown';
+			const country = data.address.country || '';
+			const locationName = `${city}, ${country}`.trim();
+			console.log('Reverse geocoding result:', locationName);
+			return locationName;
+		} catch (error) {
+			console.error('Reverse geocoding error:', error);
+			return 'Current Location';
+		}
 	}
 
 	async loadDefaultLocation() {
 		// Try to get user's location first, fallback to London
 		if (navigator.geolocation) {
 			navigator.geolocation.getCurrentPosition(
-				(position) => {
-					this.fetchWeatherByCoords(
+				async (position) => {
+					console.log('Geolocation position:', position);
+					// Get readable location name first
+					const locationName = await this.reverseGeocode(
 						position.coords.latitude,
 						position.coords.longitude
 					);
+					console.log(
+						'Location name from reverse geocoding:',
+						locationName
+					);
+					this.locationKey = locationName;
+					console.log('locationKey set to:', this.locationKey);
+
+					// Use coordinates for weather API
+					const coords =
+						position.coords.latitude +
+						',' +
+						position.coords.longitude;
+					console.log('Using coords for weather API:', coords);
+					this.fetchWeatherData(coords);
 				},
 				() => {
 					this.fetchWeatherData('London');
@@ -95,7 +165,18 @@ class WeatherApp {
 			}
 
 			const data = await response.json();
-			this.locationKey = data.resolvedAddress || data.address;
+			// Debug: Log the API response to see what data is returned
+			console.log('API Response:', data);
+			console.log('Resolved Address:', data.resolvedAddress);
+			console.log('Address:', data.address);
+			// Only update locationKey if we don't already have a readable name from reverse geocoding
+			if (
+				!this.locationKey ||
+				this.locationKey === 'Current Location' ||
+				this.locationKey === 'London'
+			) {
+				this.locationKey = data.resolvedAddress || data.address;
+			}
 			await this.updateWeatherDisplayVC(data);
 		} catch (error) {
 			this.showError('Unable to fetch weather data. Please try again.');
@@ -112,8 +193,13 @@ class WeatherApp {
 		const today = data.days[0];
 
 		// Update location and basic info
-		this.elements.currentLocation.textContent =
-			data.resolvedAddress || data.address;
+		// Use the readable location name from reverse geocoding
+		const locationDisplay = this.locationKey;
+		console.log('Location being displayed:', locationDisplay);
+		console.log('this.locationKey:', this.locationKey);
+		console.log('data.resolvedAddress:', data.resolvedAddress);
+		console.log('data.address:', data.address);
+		this.elements.currentLocation.textContent = locationDisplay;
 		this.elements.currentTemp.textContent = Math.round(
 			currentConditions.temp
 		);
