@@ -1,9 +1,9 @@
-// Weather App JavaScript
+// Weather App JavaScript// Weather App JavaScript
 class WeatherApp {
 	constructor() {
 		this.apiKey = '3766ZQMN2HU488LF4VYTMS7DC';
 		this.currentUnit = 'metric'; // 'metric' for Celsius, 'imperial' for Fahrenheit
-		this.currentLocation = null;
+		this.locationKey = null;
 
 		this.initializeApp();
 		this.bindEvents();
@@ -78,12 +78,6 @@ class WeatherApp {
 		}
 	}
 
-	async fetchWeatherByCoords(lat, lon) {
-		// For Visual Crossing, we'll use reverse geocoding to get location name first
-		// But for simplicity, we'll use a default location
-		await this.fetchWeatherData('London');
-	}
-
 	async fetchWeatherData(location) {
 		this.showLoading();
 		const unitGroup = this.currentUnit === 'metric' ? 'metric' : 'us';
@@ -101,7 +95,7 @@ class WeatherApp {
 			}
 
 			const data = await response.json();
-			this.currentLocation = data.resolvedAddress || data.address;
+			this.locationKey = data.resolvedAddress || data.address;
 			await this.updateWeatherDisplayVC(data);
 		} catch (error) {
 			this.showError('Unable to fetch weather data. Please try again.');
@@ -216,8 +210,8 @@ class WeatherApp {
 	toggleUnit() {
 		this.currentUnit =
 			this.currentUnit === 'metric' ? 'imperial' : 'metric';
-		if (this.currentLocation) {
-			this.fetchWeatherData(this.currentLocation);
+		if (this.locationKey) {
+			this.fetchWeatherData(this.locationKey);
 		}
 	}
 
@@ -236,8 +230,8 @@ class WeatherApp {
 
 	hideError() {
 		this.elements.errorMessage.classList.remove('show');
-		if (this.currentLocation) {
-			this.fetchWeatherData(this.currentLocation);
+		if (this.locationKey) {
+			this.fetchWeatherData(this.locationKey);
 		} else {
 			this.loadDefaultLocation();
 		}
@@ -289,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
 	// Initialize the weather app
 	const weatherApp = new WeatherApp();
 
-	// Add smooth scrolling for better UX
+	// Add smooth scrolling for better UX (remove if you have no anchor links)
 	document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
 		anchor.addEventListener('click', function (e) {
 			e.preventDefault();
