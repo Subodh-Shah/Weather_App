@@ -98,10 +98,8 @@ const makeFetchRequest = async function(url) {
 };
 
 const updateWeatherDisplay = function(data) {
-	console.log(data);
 	const location = data.resolvedAddress || data.address;
 	const locationName = this.formatLocation(location);
-	console.log(locationName);
 	this.elements.currentLocation.innerText = locationName;
 	this.elements.currentTemperature.innerText = data.currentConditions.temp;
 	this.elements.humidity.innerText = data.currentConditions.humidity;
@@ -133,7 +131,6 @@ const updateWeatherIcon = function(icon) {
 
 const weatherForecast = function(days) {
 	this.elements.dailyForecast.innerHTML = '';
-	console.log(days);
 	const dayMap = [
 		"Sunday",
 		"Monday",
@@ -159,16 +156,12 @@ const weatherForecast = function(days) {
 	
 	
 	days.forEach((day) => {
-		console.log(day);
 		const dayElement = document.createElement('div');
 		dayElement.classList.add('daily-item');
 		const date = new Date(day.datetime);
 		
 		const dayName = dayMap[date.getDay()];
-		console.log(date.getDay());
-		console.log(dayName);
 		const iconClass = iconMap[day.icon] || '<i class="fas fa-cloud-sun"></i>';
-		console.log(iconClass);
 		dayElement.innerHTML = `
                 <div class="daily-day">${dayName}</div>
                 <div class="daily-weather">
@@ -197,12 +190,10 @@ const toggleUnit = function() {
 
 const formatLocation = function(location) {
 	const unformattedLocation = location.split(',');
-	console.log(unformattedLocation);
 	const upperCaseLocation = unformattedLocation.map((name) =>  {
 		return name.trim().charAt(0).toUpperCase() + name.trim().slice(1)
 	});
 	const fomattedLocation = upperCaseLocation.join(', ');
-	console.log(upperCaseLocation);
 	return fomattedLocation;
 	
 }
