@@ -17,7 +17,6 @@ class WeatherApp {
 			currentLocation: document.querySelector('.location h2'),
 			currentTemp: document.getElementById('current-temp'),
 			weatherDesc: document.getElementById('weather-desc'),
-			feelsLike: document.querySelector('.feels-like'),
 			currentWeatherIcon: document.querySelector('.weather-icon'),
 			humidity: document.getElementById('humidity'),
 			windSpeed: document.getElementById('wind-speed'),
@@ -34,7 +33,7 @@ class WeatherApp {
 		this.elements.searchBtn.addEventListener('click', () =>
 			this.handleSearch()
 		);
-		this.elements.locationInput.addEventListener('keypress', (e) => {
+		this.elements.locationInput.addEventListener('keydown', (e) => {
 			if (e.key === 'Enter') this.handleSearch();
 		});
 
@@ -179,6 +178,7 @@ class WeatherApp {
 			}
 			await this.updateWeatherDisplayVC(data);
 		} catch (error) {
+			console.log(error);
 			this.showError('Unable to fetch weather data. Please try again.');
 		} finally {
 			this.hideLoading();
@@ -204,9 +204,7 @@ class WeatherApp {
 			currentConditions.temp
 		);
 		this.elements.weatherDesc.textContent = currentConditions.conditions;
-		this.elements.feelsLike.textContent = `${Math.round(
-			currentConditions.feelslike
-		)}°${this.currentUnit === 'metric' ? 'C' : 'F'}`;
+		
 
 		// Update weather icon
 		this.updateWeatherIconVC(currentConditions.icon);

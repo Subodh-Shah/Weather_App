@@ -96,6 +96,20 @@ body {
     margin-left: 4px;
 }
 
+.toggle-unit {
+	padding: 8px;
+	border-radius: 100%;
+	cursor : pointer;
+}
+
+.toggle-unit .toggle-icon {
+	cursor : pointer;
+}
+
+.toggle-unit:hover {
+	background: #f1f5f9;
+}
+
 .weather-icon {
     width: 64px;
     height: 64px;
