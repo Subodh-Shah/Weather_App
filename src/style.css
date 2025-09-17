@@ -310,6 +310,21 @@ body {
     background: #2563eb;
 }
 
+#error-message #close-error {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #64748b;
+}
+
+#error-message #close-error:hover {
+    color: #1e293b;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
     .app-container {

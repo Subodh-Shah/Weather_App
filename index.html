@@ -34,13 +34,13 @@
 				<div class="current-weather">
 					<div class="temperature">
 						<span id="current-temp">22</span>
-						<span class="unit">°C</span>
+						<span id="unit">°C</span>
 					</div>
 					<div class="toggle-unit" id="toggleUnit" title="Switch Unit"> 
 						<i class="fa-solid fa-retweet toggle-icon"></i>
 					</div>
 					<div class="weather-icon" id="current-weather-icon">
-						<i class="fas fa-cloud-sun"></i>
+						<i class="fas fa-cloud-sun"></i> 
 					</div>
 				</div>
 
@@ -78,6 +78,7 @@
 			<div class="error" id="error-message">
 				<p id="error-text">Unable to fetch weather data</p>
 				<button id="retry-btn">Retry</button>
+				 <button id="close-error" title="Close">&times;</button> 
 			</div>
 		</div>
 
